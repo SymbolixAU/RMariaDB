@@ -35,6 +35,7 @@ NULL
 #'   the trusted SSL CA certificates in PEM format.
 #' @param ssl.cipher (optional) string list of permitted ciphers to use for SSL
 #'   encryption.
+#' @param tzone string
 #' @param ... Unused, needed for compatibility with generic.
 #' @param bigint The R type that 64-bit integer types should be mapped to,
 #'   default is [bit64::integer64], which allows the full range of 64 bit
@@ -69,7 +70,7 @@ setMethod("dbConnect", "MariaDBDriver",
   function(drv, dbname = NULL, username = NULL, password = NULL, host = NULL,
     unix.socket = NULL, port = 0, client.flag = 0,
     groups = "rs-dbi", default.file = NULL, ssl.key = NULL, ssl.cert = NULL,
-    ssl.ca = NULL, ssl.capath = NULL, ssl.cipher = NULL, ...,
+    ssl.ca = NULL, ssl.capath = NULL, ssl.cipher = NULL, tzone = "+00:00", ...,
     bigint = c("integer64", "integer", "numeric", "character")) {
 
     bigint <- match.arg(bigint)
@@ -89,7 +90,9 @@ setMethod("dbConnect", "MariaDBDriver",
       bigint = bigint
     )
 
-    dbExecute(con, "SET time_zone = '+00:00'")
+    tz <- paste0("SET time_zone = '", tzone, "'")
+    print(tz)
+    dbExecute(con, tz)
     dbExecute(con, "SET autocommit = 0")
     con
   }
